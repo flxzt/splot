@@ -1,0 +1,4 @@
+[build]
+filehash = true
+release = false
+dist = "dist"

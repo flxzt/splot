@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Splot
+Comment=A multi-platform serial plotter and monitor
+Exec=splot
+Type=Application
+Terminal=false
+Icon=splot.svg
+Categories=Utility;Development;

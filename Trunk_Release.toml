@@ -1,0 +1,5 @@
+[build]
+filehash = false
+release = true
+dist = "dist_release"
+public_url = "/webapps/splot/"

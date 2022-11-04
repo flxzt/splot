@@ -1,0 +1,6 @@
+/target
+/dist
+/dist_release
+/dist_demo
+/.vscode
+*.code-workspace
