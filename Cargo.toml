@@ -15,9 +15,9 @@ demo = []
 [dependencies]
 anyhow = "1"
 log = "0.4"
-egui = "0.21"
-egui_extras = {version = "0.21", features = ["svg"] }
-eframe = { version = "0.21", features = ["default_fonts", "wgpu", "persistence"] }
+egui = "0.22"
+egui_extras = {version = "0.22", features = ["svg"] }
+eframe = { version = "0.22", features = ["default_fonts", "wgpu", "persistence"] }
 serde = { version = "1", features = ["derive"] } # You only need this if you want app persistence
 instant = { version = "0.1", features=["wasm-bindgen"] }
 async-trait = "0.1"

@@ -1,4 +1,4 @@
-use egui::plot;
+use egui::plot::{self, AxisBools};
 
 #[cfg(target_arch = "wasm32")]
 use super::WEB_SERIAL_API_SUPPORTED;
@@ -484,6 +484,8 @@ If no such variable is specified, the application takes the time when receiving 
                     format!("{} {}", round_to_decimals(val, 5), TimeUnit::S)
                 })
                 .y_axis_formatter(move |val, _range| round_to_decimals(val, 7).to_string())
+                .allow_zoom(AxisBools { x: false, y: true })
+                .allow_boxed_zoom(false)
                 .show(ui, |plot_ui| {
                     for (i, samples) in self.samples_vec.iter().enumerate() {
                         if !self.samples_appearance[i].visible {

@@ -1,58 +1,94 @@
-# name: CI
-# on:
-#   workflow_dispatch:
-#   push:
-#     branches:
-#     - main
-#   pull_request:
-#     branches:
-#     - main
-# 
-# jobs:
-#   check:
-#     name: Check
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v2
-#         with:
-#           submodules: recursive
-#       - uses: dtolnay/rust-toolchain@stable
-#       - uses: Swatinem/rust-cache@v2
-#       - run: cargo check
-# 
-#   test:
-#     name: Test
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v2
-#         with:
-#           submodules: recursive
-#       - uses: dtolnay/rust-toolchain@stable
-#       - uses: Swatinem/rust-cache@v2
-#       - run: cargo test
-# 
-#   fmt:
-#     name: Rustfmt
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v2
-#         with:
-#           submodules: recursive
-#       - uses: dtolnay/rust-toolchain@stable
-#         with:
-#           components: rustfmt
-#       - uses: Swatinem/rust-cache@v2
-#       - run: cargo fmt --all -- --check
-# 
-#   clippy:
-#     name: Clippy
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v2
-#         with:
-#           submodules: recursive
-#       - uses: dtolnay/rust-toolchain@stable
-#         with:
-#           components: clippy
-#       - uses: Swatinem/rust-cache@v2
-#      - run: cargo clippy --all -- -D warnings
+name: CI
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check:
+    name: Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+          libxcb-render0-dev \
+          libxcb-shape0-dev \
+          libxcb-xfixes0-dev \
+          libspeechd-dev \
+          libxkbcommon-dev \
+          libssl-dev \
+          libudev-dev
+      - name: Check
+        run: cargo check
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+          libxcb-render0-dev \
+          libxcb-shape0-dev \
+          libxcb-xfixes0-dev \
+          libspeechd-dev \
+          libxkbcommon-dev \
+          libssl-dev \
+          libudev-dev
+      - name: Test
+        run: cargo test
+
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo fmt --all -- --check
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+          libxcb-render0-dev \
+          libxcb-shape0-dev \
+          libxcb-xfixes0-dev \
+          libspeechd-dev \
+          libxkbcommon-dev \
+          libssl-dev \
+          libudev-dev
+      - name: Test
+        run: cargo clippy --all -- -D warnings
