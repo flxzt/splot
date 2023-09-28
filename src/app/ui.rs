@@ -605,7 +605,7 @@ If no such variable is specified, the application takes the time when receiving 
                             let plot_line = egui_plot::Line::new(
                                 samples_x
                                     .into_iter()
-                                    .zip(samples_y.into_iter())
+                                    .zip(samples_y)
                                     .filter_map(|(x, y)| {
                                         if last_x.time - x.time < self.plot_xy_newer {
                                             Some([x.value, y.value])

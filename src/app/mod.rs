@@ -4,7 +4,7 @@ use futures::lock::Mutex;
 use instant::{Duration, Instant};
 use std::collections::VecDeque;
 use std::io::{BufRead, Cursor};
-use std::sync::Arc;
+use std::rc::Rc;
 
 use crate::fixedsizebuffer::FixedSizeBuffer;
 #[allow(unused)]
@@ -299,7 +299,7 @@ pub struct SplotApp {
     dummy_connection: bool,
 
     #[serde(skip)]
-    serial_connection: Arc<Mutex<Box<dyn SerialConnection>>>,
+    serial_connection: Rc<Mutex<Box<dyn SerialConnection>>>,
     #[serde(skip)]
     start_time: Instant,
     #[serde(skip)]
@@ -357,7 +357,7 @@ pub struct SplotApp {
 
 impl Default for SplotApp {
     fn default() -> Self {
-        let serial_connection = Arc::new(Mutex::new(new_serial_connection_dummy()));
+        let serial_connection = Rc::new(Mutex::new(new_serial_connection_dummy()));
         let now = Instant::now();
 
         Self {
@@ -450,14 +450,14 @@ impl SplotApp {
         #[cfg(feature = "demo")]
         {
             // Always the dummy connection as demo
-            self.serial_connection = Arc::new(Mutex::new(new_serial_connection_dummy()));
+            self.serial_connection = Rc::new(Mutex::new(new_serial_connection_dummy()));
         }
 
         #[cfg(not(feature = "demo"))]
         if self.dummy_connection {
-            self.serial_connection = Arc::new(Mutex::new(new_serial_connection_dummy()));
+            self.serial_connection = Rc::new(Mutex::new(new_serial_connection_dummy()));
         } else {
-            self.serial_connection = Arc::new(Mutex::new(new_serial_connection()));
+            self.serial_connection = Rc::new(Mutex::new(new_serial_connection()));
         }
 
         // Start listing available ports
@@ -468,7 +468,7 @@ impl SplotApp {
 
     /// Installs the available_ports promise and polls for its readiness
     fn available_ports(&mut self, ctx: &egui::Context) {
-        let c = Arc::clone(&self.serial_connection);
+        let c = Rc::clone(&self.serial_connection);
 
         let _ = self.promise_available_ports.get_or_insert_with(move || {
             poll_promise::Promise::spawn_local(
@@ -481,7 +481,7 @@ impl SplotApp {
 
     /// Installs the try_connect promise and polls for its readiness
     pub fn try_connect(&mut self, ctx: &egui::Context) {
-        let c = Arc::clone(&self.serial_connection);
+        let c = Rc::clone(&self.serial_connection);
 
         if let Some(selected_port_index) = self.selected_port_index {
             let baudrate = self.baudrate;
@@ -515,7 +515,7 @@ impl SplotApp {
 
     /// Installs the read promise and polls for its readiness
     fn read(&mut self, ctx: &egui::Context) {
-        let c = Arc::clone(&self.serial_connection);
+        let c = Rc::clone(&self.serial_connection);
 
         // read from serial port
         let _ = self.promise_read.get_or_insert_with(move || {
