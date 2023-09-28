@@ -1,4 +1,4 @@
-use egui::plot::{self, AxisBools};
+use egui_plot::AxisBools;
 
 #[cfg(target_arch = "wasm32")]
 use super::WEB_SERIAL_API_SUPPORTED;
@@ -16,7 +16,10 @@ impl SplotApp {
                 ui.set_width(300.0);
 
                 ui.vertical_centered_justified(|ui| {
-                    self.app_icon.show_size(ui, egui::Vec2::new(256.0, 256.0));
+                    ui.add(
+                        egui::Image::new(egui::include_image!("../../misc/splot_logo.svg"))
+                            .max_size(egui::Vec2 { x: 256., y: 256. }),
+                    );
 
                     ui.label(egui::RichText::new("- Splot -").heading());
                     ui.add_space(12.0);
@@ -461,7 +464,7 @@ If no such variable is specified, the application takes the time when receiving 
 
             ui.separator();
 
-            plot::Plot::new("plot_tv")
+            egui_plot::Plot::new("plot_tv")
                 .label_formatter(move |name, value| {
                     if !name.is_empty() {
                         format!(
@@ -480,10 +483,10 @@ If no such variable is specified, the application takes the time when receiving 
                         )
                     }
                 })
-                .x_axis_formatter(move |val, _range| {
+                .x_axis_formatter(move |val, _c, _range| {
                     format!("{} {}", round_to_decimals(val, 5), TimeUnit::S)
                 })
-                .y_axis_formatter(move |val, _range| round_to_decimals(val, 7).to_string())
+                .y_axis_formatter(move |val, _c, _range| round_to_decimals(val, 7).to_string())
                 .allow_zoom(AxisBools { x: false, y: true })
                 .allow_boxed_zoom(false)
                 .show(ui, |plot_ui| {
@@ -501,13 +504,13 @@ If no such variable is specified, the application takes the time when receiving 
                         };
 
                         let last_plot_bounds = plot_ui.plot_bounds();
-                        let plot_bounds = plot::PlotBounds::from_min_max(
+                        let plot_bounds = egui_plot::PlotBounds::from_min_max(
                             [last.time - self.plot_tv_newer, last_plot_bounds.min()[1]],
                             [last.time, last_plot_bounds.max()[1]],
                         );
                         plot_ui.set_plot_bounds(plot_bounds);
 
-                        let plot_line = plot::Line::new(
+                        let plot_line = egui_plot::Line::new(
                             samples
                                 .into_iter()
                                 .filter_map(|s| {
@@ -517,7 +520,7 @@ If no such variable is specified, the application takes the time when receiving 
                                         None
                                     }
                                 })
-                                .collect::<plot::PlotPoints>(),
+                                .collect::<egui_plot::PlotPoints>(),
                         )
                         .name(&self.samples_appearance[i].name)
                         .color(self.samples_appearance[i].color);
@@ -525,8 +528,8 @@ If no such variable is specified, the application takes the time when receiving 
                         let start_vline_val = first.time.max(last.time - self.plot_tv_newer);
 
                         plot_ui.vline(
-                            plot::VLine::new(start_vline_val)
-                                .style(plot::LineStyle::Dashed { length: 2.0 })
+                            egui_plot::VLine::new(start_vline_val)
+                                .style(egui_plot::LineStyle::Dashed { length: 2.0 })
                                 .color(egui::Color32::LIGHT_BLUE),
                         );
 
@@ -590,16 +593,16 @@ If no such variable is specified, the application takes the time when receiving 
 
             ui.separator();
 
-            plot::Plot::new("xy plot")
-                .x_axis_formatter(move |val, _range| round_to_decimals(val, 7).to_string())
-                .y_axis_formatter(move |val, _range| round_to_decimals(val, 7).to_string())
+            egui_plot::Plot::new("xy plot")
+                .x_axis_formatter(move |val, _c, _range| round_to_decimals(val, 7).to_string())
+                .y_axis_formatter(move |val, _c, _range| round_to_decimals(val, 7).to_string())
                 .show(ui, |plot_ui| {
                     if let (Some(samples_x), Some(samples_y)) = (
                         self.samples_vec.get(self.plot_xy_samples_x),
                         self.samples_vec.get(self.plot_xy_samples_y),
                     ) {
                         if let (Some(last_x), Some(last_y)) = (samples_x.last(), samples_y.last()) {
-                            let plot_line = plot::Line::new(
+                            let plot_line = egui_plot::Line::new(
                                 samples_x
                                     .into_iter()
                                     .zip(samples_y.into_iter())
@@ -610,12 +613,13 @@ If no such variable is specified, the application takes the time when receiving 
                                             None
                                         }
                                     })
-                                    .collect::<plot::PlotPoints>(),
+                                    .collect::<egui_plot::PlotPoints>(),
                             )
                             .color(egui::Color32::DARK_RED);
-                            let last_point = plot::Points::new(vec![[last_x.value, last_y.value]])
-                                .color(egui::Color32::RED)
-                                .highlight(true);
+                            let last_point =
+                                egui_plot::Points::new(vec![[last_x.value, last_y.value]])
+                                    .color(egui::Color32::RED)
+                                    .highlight(true);
 
                             plot_ui.line(plot_line);
                             plot_ui.points(last_point);

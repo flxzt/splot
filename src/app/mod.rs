@@ -1,6 +1,5 @@
 pub mod ui;
 
-use egui::plot;
 use futures::lock::Mutex;
 use instant::{Duration, Instant};
 use std::collections::VecDeque;
@@ -32,9 +31,9 @@ const MONITOR_LINES_BUF_SIZE: usize = 128;
 
 const READ_BUF_SIZE: usize = 32;
 
-impl From<Sample> for plot::PlotPoint {
+impl From<Sample> for egui_plot::PlotPoint {
     fn from(sample: Sample) -> Self {
-        plot::PlotPoint {
+        egui_plot::PlotPoint {
             x: sample.time,
             y: sample.value,
         }
@@ -136,9 +135,10 @@ impl Parser {
 
                 let Some(value) = name_splits.pop_front().and_then(|s| {
                     s.chars()
-                    .filter(|&c| c.is_ascii_digit() || c == '-' || c == '.')
-                    .collect::<String>()
-                    .parse().ok()
+                        .filter(|&c| c.is_ascii_digit() || c == '-' || c == '.')
+                        .collect::<String>()
+                        .parse()
+                        .ok()
                 }) else {
                     continue;
                 };
@@ -315,8 +315,6 @@ pub struct SplotApp {
 
     // Ui state
     #[serde(skip)]
-    app_icon: egui_extras::RetainedImage,
-    #[serde(skip)]
     show_about_window: bool,
     #[serde(skip)]
     show_usage_window: bool,
@@ -334,7 +332,7 @@ pub struct SplotApp {
     #[serde(skip)]
     plot_tv_newer: f64,
     #[serde(skip)]
-    plot_tv_bounds: plot::PlotBounds,
+    plot_tv_bounds: egui_plot::PlotBounds,
 
     #[serde(skip)]
     plot_xy_samples_x: usize,
@@ -361,12 +359,6 @@ impl Default for SplotApp {
     fn default() -> Self {
         let serial_connection = Arc::new(Mutex::new(new_serial_connection_dummy()));
         let now = Instant::now();
-        let app_icon = egui_extras::RetainedImage::from_svg_bytes_with_size(
-            "app_icon",
-            include_bytes!("../../misc/splot_logo.svg"),
-            egui_extras::image::FitTo::Size(512, 512),
-        )
-        .unwrap();
 
         Self {
             baudrate: 115200,
@@ -388,7 +380,6 @@ impl Default for SplotApp {
             parser: Parser::default(),
             pause: false,
 
-            app_icon,
             show_about_window: false,
             show_usage_window: false,
             show_help_window: false,
@@ -397,7 +388,7 @@ impl Default for SplotApp {
             samples_appearance: vec![],
             plot_page: PlotPage::default(),
             plot_tv_newer: 10.0,
-            plot_tv_bounds: plot::PlotBounds::NOTHING,
+            plot_tv_bounds: egui_plot::PlotBounds::NOTHING,
 
             plot_xy_samples_x: 0,
             plot_xy_samples_y: 0,
@@ -432,6 +423,7 @@ impl SplotApp {
     /// Some things need to be set up at runtime
     pub fn setup(&mut self, ctx: &egui::Context) {
         self.reset_connection(ctx);
+        egui_extras::install_image_loaders(ctx);
     }
 
     #[allow(unused)]

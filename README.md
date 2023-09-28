@@ -52,5 +52,10 @@ To compile with the Web Serial API enabled, first set the environment variable f
 Execute:
 
 ```bash
-RUSTFLAGS=--cfg=web_sys_unstable_apis trunk --config Trunk_Release.toml build`
+RUSTFLAGS=--cfg=web_sys_unstable_apis trunk --config Trunk_Release.toml build
 ```
+
+# License
+<sup>
+Licensed under <a href="LICENSE-GPL3">GPL-3.0-or-later license</a>.
+</sup>
