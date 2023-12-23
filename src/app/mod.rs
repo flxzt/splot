@@ -647,10 +647,10 @@ impl eframe::App for SplotApp {
 
     /// Called each time the UI needs repainting, which may be many times per second.
     /// Put your widgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
-    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         self.async_tasks(ctx);
 
-        self.draw_ui(ctx, frame);
+        self.draw_ui(ctx);
 
         // repaint periodically
         ctx.request_repaint_after(instant::Duration::from_secs_f64(1.0 / 60.0));

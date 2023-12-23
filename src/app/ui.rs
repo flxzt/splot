@@ -1,5 +1,3 @@
-use egui_plot::AxisBools;
-
 #[cfg(target_arch = "wasm32")]
 use super::WEB_SERIAL_API_SUPPORTED;
 
@@ -7,7 +5,7 @@ use super::{PlotPage, SplotApp, TimeUnit};
 use crate::serialconnection::{DataBits, FlowControl, Parity, StopBits};
 
 impl SplotApp {
-    pub fn draw_ui(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+    pub fn draw_ui(&mut self, ctx: &egui::Context) {
         egui::Window::new("About")
             .open(&mut self.show_about_window)
             .collapsible(false)
@@ -27,6 +25,7 @@ impl SplotApp {
                     ui.separator();
                     ui.label("Created by:");
                     ui.label("Felix Zwettler");
+                    ui.hyperlink_to("Repository", "https://github.com/flxzt/splot");
                     ui.separator();
                     ui.label("Powered by:");
                     ui.hyperlink_to("egui", "https://github.com/emilk/egui/");
@@ -93,7 +92,7 @@ If no such variable is specified, the application takes the time when receiving 
 
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.vertical(|ui| {
-                self.render_top_bar(ui, ctx, frame);
+                self.render_top_bar(ui, ctx);
 
                 ui.separator();
 
@@ -115,12 +114,7 @@ If no such variable is specified, the application takes the time when receiving 
     }
 
     #[allow(unused)]
-    fn render_top_bar(
-        &mut self,
-        ui: &mut egui::Ui,
-        ctx: &egui::Context,
-        frame: &mut eframe::Frame,
-    ) {
+    fn render_top_bar(&mut self, ui: &mut egui::Ui, ctx: &egui::Context) {
         ui.horizontal(|ui| {
             ui.menu_button("Splot", |ui| {
                 if ui.button("About").clicked() {
@@ -130,7 +124,7 @@ If no such variable is specified, the application takes the time when receiving 
 
                 #[cfg(not(target_arch = "wasm32"))] // no close() on web pages!
                 if ui.button("Quit").clicked() {
-                    frame.close();
+                    ctx.send_viewport_cmd(egui::ViewportCommand::Close)
                 }
             });
 
@@ -487,7 +481,7 @@ If no such variable is specified, the application takes the time when receiving 
                     format!("{} {}", round_to_decimals(val, 5), TimeUnit::S)
                 })
                 .y_axis_formatter(move |val, _c, _range| round_to_decimals(val, 7).to_string())
-                .allow_zoom(AxisBools { x: false, y: true })
+                .allow_zoom(egui::Vec2b { x: false, y: true })
                 .allow_boxed_zoom(false)
                 .show(ui, |plot_ui| {
                     for (i, samples) in self.samples_vec.iter().enumerate() {
