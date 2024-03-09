@@ -36,7 +36,7 @@ impl<T> FixedSizeBuffer<T> {
     }
 
     pub fn first(&self) -> Option<&T> {
-        self.inner.get(0)
+        self.inner.front()
     }
 
     pub fn last(&self) -> Option<&T> {
