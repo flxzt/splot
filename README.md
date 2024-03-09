@@ -55,7 +55,8 @@ Execute:
 RUSTFLAGS=--cfg=web_sys_unstable_apis trunk --config Trunk_Release.toml build
 ```
 
-# License
+### License
+
 <sup>
 Licensed under <a href="LICENSE-GPL3">GPL-3.0-or-later license</a>.
 </sup>
