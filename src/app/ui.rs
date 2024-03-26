@@ -477,10 +477,12 @@ If no such variable is specified, the application takes the time when receiving 
                         )
                     }
                 })
-                .x_axis_formatter(move |val, _c, _range| {
-                    format!("{} {}", round_to_decimals(val, 5), TimeUnit::S)
+                .x_axis_formatter(move |mark, _c, _range| {
+                    format!("{} {}", round_to_decimals(mark.value, 5), TimeUnit::S)
                 })
-                .y_axis_formatter(move |val, _c, _range| round_to_decimals(val, 7).to_string())
+                .y_axis_formatter(move |mark, _c, _range| {
+                    round_to_decimals(mark.value, 7).to_string()
+                })
                 .allow_zoom(egui::Vec2b { x: false, y: true })
                 .allow_boxed_zoom(false)
                 .show(ui, |plot_ui| {
@@ -588,8 +590,12 @@ If no such variable is specified, the application takes the time when receiving 
             ui.separator();
 
             egui_plot::Plot::new("xy plot")
-                .x_axis_formatter(move |val, _c, _range| round_to_decimals(val, 7).to_string())
-                .y_axis_formatter(move |val, _c, _range| round_to_decimals(val, 7).to_string())
+                .x_axis_formatter(move |mark, _c, _range| {
+                    round_to_decimals(mark.value, 7).to_string()
+                })
+                .y_axis_formatter(move |mark, _c, _range| {
+                    round_to_decimals(mark.value, 7).to_string()
+                })
                 .show(ui, |plot_ui| {
                     if let (Some(samples_x), Some(samples_y)) = (
                         self.samples_vec.get(self.plot_xy_samples_x),
